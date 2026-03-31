@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Twin - Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #10b981;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-light: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      --transition: all 0.3s ease;
+      --border-radius: 12px;
+      --border-radius-lg: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .back-glow {
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.2;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glow-left {
+      top: 60px;
+      left: -140px;
+      background: #8b5cf6;
+    }
+
+    .glow-right {
+      bottom: -120px;
+      right: -130px;
+      background: #10b981;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo i { color: var(--primary); }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .btn:hover { transform: translateY(-2px); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 34px 0 56px;
+    }
+
+    .hero {
+      background: var(--gradient-dark);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 26px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.22) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.6rem, 3.1vw, 2.4rem);
+      margin-bottom: 7px;
+    }
+
+    .hero p { color: var(--text-secondary); }
+
+    .meta-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 {
+      font-size: 1.12rem;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-box { height: 300px; }
+
+    .score {
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 10px;
+      color: #dbeafe;
+    }
+
+    .meter {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .meter-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #22d3ee);
+      transition: width 0.8s ease;
+    }
+
+    .tip {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .skill-list {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .skill-list li {
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: var(--bg-card-light);
+      color: var(--text-secondary);
+      padding: 8px 10px;
+      font-size: 0.93rem;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .skill-list li i { font-size: 0.84rem; }
+    .list-match i { color: #22c55e; }
+    .list-missing i { color: #ef4444; }
+    .list-jd i { color: #a78bfa; }
+
+    .roadmap-box {
+      white-space: pre-wrap;
+      min-height: 220px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.18);
+      border-radius: var(--border-radius);
+      padding: 14px;
+    }
+
+    .empty {
+      display: none;
+      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--border-radius-lg);
+      padding: 40px 22px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .empty h2 { margin-bottom: 10px; }
+    .empty p { color: var(--text-secondary); margin-bottom: 16px; }
+
+    @media (max-width: 1000px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .chart-box { height: 260px; }
+    }
+
+    @media (max-width: 680px) {
+      .hero,
+      .card { padding: 18px; }
+      .score { font-size: 2.2rem; }
+      .nav-actions .btn { width: 100%; justify-content: center; }
+      .nav-actions { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="back-glow glow-left"></div>
+  <div class="back-glow glow-right"></div>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a class="logo" href="index.html"><i class="fas fa-robot"></i> AI Career Twin</a>
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="upload.html"><i class="fas fa-arrow-left"></i> New Analysis</a>
+        <button id="roadmapBtn" class="btn btn-primary" type="button"><i class="fas fa-route"></i> Generate Roadmap</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+      <section id="emptyState" class="empty">
+        <h2>No analysis data found</h2>
+        <p>Upload resume and job description first. Dashboard is available after analysis.</p>
+        <a class="btn btn-primary" href="upload.html"><i class="fas fa-upload"></i> Go To Upload</a>
+      </section>
+
+      <div id="dashboardContent" style="display:none;">
+        <section class="hero">
+          <div class="hero-top">
+            <div>
+              <h1>Role Match Dashboard</h1>
+              <p>Real-time comparison of your resume against the selected job description.</p>
+            </div>
+          </div>
+          <div class="meta-row">
+            <span id="fileChip" class="chip"><i class="fas fa-file"></i> Resume: -</span>
+            <span id="timeChip" class="chip"><i class="fas fa-clock"></i> Analyzed: -</span>
+            <span id="jdChip" class="chip"><i class="fas fa-list-check"></i> JD Skills: 0</span>
+            <span id="matchChip" class="chip"><i class="fas fa-percent"></i> Match: 0%</span>
+          </div>
+        </section>
+
+        <section class="stats-grid">
+          <article class="card">
+            <h2><i class="fas fa-chart-column"></i> Skills Overview</h2>
+            <div class="chart-box"><canvas id="skillsChart"></canvas></div>
+          </article>
+          <article class="card">
+            <h2><i class="fas fa-bullseye"></i> Match Percentage</h2>
+            <div id="matchScore" class="score">0%</div>
+            <div class="meter"><div id="matchFill" class="meter-fill"></div></div>
+            <p id="matchTip" class="tip"></p>
+          </article>
+        </section>
+
+        <section class="skills-grid">
+          <article class="card">
+            <h2><i class="fas fa-list"></i> Job Description Skills</h2>
+            <ul id="jdSkillsList" class="skill-list"></ul>
+          </article>
+          <article class="card">
+            <h2><i class="fas fa-handshake"></i> Matched Skills</h2>
+            <ul id="matchedSkillsList" class="skill-list"></ul>
+          </article>
+          <article class="card">
+            <h2><i class="fas fa-triangle-exclamation"></i> Missing Skills</h2>
+            <ul id="missingSkillsList" class="skill-list"></ul>
+          </article>
+        </section>
+
+        <section class="card">
+          <h2><i class="fas fa-road"></i> AI Career Roadmap</h2>
+          <div id="roadmapOut" class="roadmap-box">Click "Generate Roadmap" to create your AI career roadmap.</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let skillsChart = null;
+    let analysisData = null;
+
+    const emptyState = document.getElementById("emptyState");
+    const dashboardContent = document.getElementById("dashboardContent");
+    const roadmapBtn = document.getElementById("roadmapBtn");
+    const roadmapOut = document.getElementById("roadmapOut");
+
+    function getTip(percent) {
+      if (percent >= 80) return "Excellent alignment. Focus on portfolio storytelling and interviews.";
+      if (percent >= 60) return "Solid fit. Closing the missing skills can strongly improve your chances.";
+      if (percent >= 40) return "Moderate fit. Prioritize role-critical missing skills first.";
+      return "Low current fit. Build fundamentals and targeted projects before applying.";
+    }
+
+    function renderList(targetId, items, mode, fallback) {
+      const el = document.getElementById(targetId);
+      if (!items || items.length === 0) {
+        el.innerHTML = `<li class="${mode}"><i class="fas fa-circle-info"></i><span>${fallback}</span></li>`;
+        return;
+      }
+
+      el.innerHTML = items.map(skill =>
+        `<li class="${mode}"><i class="fas fa-circle"></i><span>${skill}</span></li>`
+      ).join("");
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById("skillsChart").getContext("2d");
+      const values = [
+        (data.resumeSkills || []).length,
+        (data.jdSkills || []).length,
+        (data.matchedSkills || []).length,
+        (data.missingSkills || []).length
+      ];
+
+      if (skillsChart) {
+        skillsChart.destroy();
+      }
+
+      skillsChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Resume", "Job Description", "Matched", "Missing"],
+          datasets: [{
+            data: values,
+            backgroundColor: [
+              "rgba(99, 102, 241, 0.8)",
+              "rgba(139, 92, 246, 0.8)",
+              "rgba(16, 185, 129, 0.8)",
+              "rgba(239, 68, 68, 0.8)"
+            ],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { color: "#cbd5e1" },
+              grid: { color: "rgba(255,255,255,0.1)" }
+            },
+            x: {
+              ticks: { color: "#cbd5e1" },
+              grid: { display: false }
+            }
+          }
+        }
+      });
+    }
+
+    function renderDashboard(data) {
+      const jdSkills = data.jdSkills || [];
+      const matchedSkills = data.matchedSkills || [];
+      const missingSkills = data.missingSkills || [];
+      const matchPercent = Number(data.matchPercent || 0);
+
+      document.getElementById("fileChip").innerHTML = `<i class="fas fa-file"></i> Resume: ${data.resumeFileName || "Uploaded PDF"}`;
+      document.getElementById("timeChip").innerHTML = `<i class="fas fa-clock"></i> Analyzed: ${new Date(data.analyzedAt || Date.now()).toLocaleString()}`;
+      document.getElementById("jdChip").innerHTML = `<i class="fas fa-list-check"></i> JD Skills: ${jdSkills.length}`;
+      document.getElementById("matchChip").innerHTML = `<i class="fas fa-percent"></i> Match: ${matchPercent}%`;
+
+      document.getElementById("matchScore").textContent = `${matchPercent}%`;
+      document.getElementById("matchFill").style.width = `${Math.max(0, Math.min(100, matchPercent))}%`;
+      document.getElementById("matchTip").textContent = getTip(matchPercent);
+
+      renderList("jdSkillsList", jdSkills, "list-jd", "No JD skills extracted.");
+      renderList("matchedSkillsList", matchedSkills, "list-match", "No matched skills detected.");
+      renderList("missingSkillsList", missingSkills, "list-missing", "No missing skills. Strong fit.");
+
+      renderChart(data);
+    }
+
+    async function generateRoadmap() {
+      if (!analysisData) return;
+
+      roadmapBtn.disabled = true;
+      roadmapBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+      roadmapOut.textContent = "Generating AI roadmap...";
+
+      try {
+        const response = await fetch("/generate-roadmap", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            extractedText: analysisData.extractedText || "",
+            resumeSkills: analysisData.resumeSkills || [],
+            jdSkills: analysisData.jdSkills || [],
+            missingSkills: analysisData.missingSkills || [],
+            matchPercent: Number(analysisData.matchPercent || 0)
+          })
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Roadmap generation failed.");
+        }
+
+        roadmapOut.textContent = data.roadmap || "No roadmap generated.";
+      } catch (error) {
+        roadmapOut.textContent = error.message || "Unable to generate roadmap now.";
+      } finally {
+        roadmapBtn.disabled = false;
+        roadmapBtn.innerHTML = '<i class="fas fa-route"></i> Generate Roadmap';
+      }
+    }
+
+    function init() {
+      const raw = sessionStorage.getItem("careerTwinAnalysis");
+      if (!raw) {
+        emptyState.style.display = "block";
+        dashboardContent.style.display = "none";
+        roadmapBtn.disabled = true;
+        return;
+      }
+
+      try {
+        analysisData = JSON.parse(raw);
+      } catch (e) {
+        emptyState.style.display = "block";
+        dashboardContent.style.display = "none";
+        roadmapBtn.disabled = true;
+        return;
+      }
+
+      emptyState.style.display = "none";
+      dashboardContent.style.display = "block";
+      renderDashboard(analysisData);
+    }
+
+    roadmapBtn.addEventListener("click", generateRoadmap);
+    init();
+  </script>
+</body>
+</html>

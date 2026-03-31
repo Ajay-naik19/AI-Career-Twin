@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Career Twin - Upload</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #10b981;
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-light: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      --transition: all 0.3s ease;
+      --border-radius: 12px;
+      --border-radius-lg: 20px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.2;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .orb-a {
+      width: 360px;
+      height: 360px;
+      top: 5%;
+      left: -120px;
+      background: #8b5cf6;
+    }
+
+    .orb-b {
+      width: 320px;
+      height: 320px;
+      bottom: 0;
+      right: -120px;
+      background: #10b981;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav-inner {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      text-decoration: none;
+      color: var(--text-primary);
+      font-size: 1.35rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo i { color: var(--primary); }
+
+    .nav-links {
+      display: flex;
+      gap: 1.3rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      padding: 46px 0 70px;
+    }
+
+    .upload-shell {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .intro-card,
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--border-radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-card::after,
+    .form-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(99, 102, 241, 0) 70%);
+      pointer-events: none;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--secondary);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 999px;
+      padding: 7px 12px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(1.8rem, 3.2vw, 2.7rem);
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .intro-text {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      max-width: 520px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--border-radius);
+      padding: 12px;
+    }
+
+    .step-item i {
+      color: var(--primary);
+      margin-top: 3px;
+    }
+
+    .step-item span {
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+
+    .form-card h2 {
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .input-wrap {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: var(--border-radius);
+      background: var(--bg-card-light);
+      overflow: hidden;
+    }
+
+    input[type="file"],
+    textarea {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-primary);
+      padding: 12px 14px;
+      font-size: 0.98rem;
+    }
+
+    textarea {
+      min-height: 180px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .hint {
+      color: var(--text-muted);
+      font-size: 0.86rem;
+      margin-top: 8px;
+    }
+
+    .btn-main {
+      width: 100%;
+      border: none;
+      border-radius: 999px;
+      background: var(--gradient-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 18px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-main:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .btn-main:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 14px;
+      min-height: 24px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .status.ok { color: var(--secondary); }
+    .status.error { color: #ef4444; }
+
+    @media (max-width: 980px) {
+      .upload-shell { grid-template-columns: 1fr; }
+      .intro-card,
+      .form-card { padding: 22px; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { gap: 0.8rem; font-size: 0.92rem; }
+      main { padding-top: 28px; }
+      textarea { min-height: 160px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a class="logo" href="index.html"><i class="fas fa-robot"></i> AI Career Twin</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="features.html">Features</a>
+        <a href="how-it-works.html">How It Works</a>
+        <a class="active" href="upload.html">Upload</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container upload-shell">
+      <section class="intro-card">
+        <span class="pill"><i class="fas fa-sparkles"></i> Personalized Career Intelligence</span>
+        <h1>Upload Once, Get a Full Role-Match Dashboard</h1>
+        <p class="intro-text">
+          Share your resume PDF and target job description. We analyze your skills, detect skill gaps,
+          score your match percentage, and then redirect you to a dedicated analytics dashboard.
+        </p>
+
+        <div class="steps">
+          <div class="step-item">
+            <i class="fas fa-file-arrow-up"></i>
+            <span><strong>Step 1:</strong> Upload your latest resume in PDF format.</span>
+          </div>
+          <div class="step-item">
+            <i class="fas fa-clipboard-list"></i>
+            <span><strong>Step 2:</strong> Paste the complete job description.</span>
+          </div>
+          <div class="step-item">
+            <i class="fas fa-chart-pie"></i>
+            <span><strong>Step 3:</strong> We analyze and redirect you to the redesigned dashboard.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <h2>Start Analysis</h2>
+        <form id="uploadForm">
+          <div class="field">
+            <label for="resumeInput">Resume PDF</label>
+            <div class="input-wrap">
+              <input id="resumeInput" type="file" name="resume" accept="application/pdf" required>
+            </div>
+            <p class="hint">Only PDF files up to 5MB are supported.</p>
+          </div>
+
+          <div class="field">
+            <label for="jdInput">Job Description</label>
+            <div class="input-wrap">
+              <textarea id="jdInput" name="jd" placeholder="Paste the target job description here..." required></textarea>
+            </div>
+          </div>
+
+          <button id="analyzeBtn" class="btn-main" type="submit">
+            <i class="fas fa-microchip"></i> Analyze And Open Dashboard
+          </button>
+          <div id="status" class="status"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const resumeInput = document.getElementById("resumeInput");
+    const jdInput = document.getElementById("jdInput");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const statusEl = document.getElementById("status");
+
+    function setStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = "status" + (type ? " " + type : "");
+    }
+
+    function setLoading(isLoading) {
+      analyzeBtn.disabled = isLoading;
+      analyzeBtn.innerHTML = isLoading
+        ? '<i class="fas fa-spinner fa-spin"></i> Analyzing...'
+        : '<i class="fas fa-microchip"></i> Analyze And Open Dashboard';
+    }
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const file = resumeInput.files[0];
+      const jd = jdInput.value.trim();
+
+      if (!file) {
+        setStatus("Please select a resume PDF.", "error");
+        return;
+      }
+
+      if (file.type !== "application/pdf") {
+        setStatus("Only PDF resumes are supported.", "error");
+        return;
+      }
+
+      if (!jd) {
+        setStatus("Please paste the job description.", "error");
+        return;
+      }
+
+      setLoading(true);
+      setStatus("Running analysis...", "");
+
+      try {
+        const formData = new FormData();
+        formData.append("resume", file);
+        formData.append("jd", jd);
+
+        const response = await fetch("/extract-pdf", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || "Analysis failed.");
+        }
+
+        const payload = {
+          ...data,
+          jdText: jd,
+          resumeFileName: file.name,
+          analyzedAt: new Date().toISOString()
+        };
+
+        sessionStorage.setItem("careerTwinAnalysis", JSON.stringify(payload));
+        setStatus("Analysis complete. Redirecting to dashboard...", "ok");
+
+        setTimeout(function () {
+          window.location.href = "dashboard.html";
+        }, 500);
+      } catch (error) {
+        setStatus(error.message || "Something went wrong. Try again.", "error");
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
